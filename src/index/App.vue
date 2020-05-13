@@ -1,7 +1,5 @@
 <template>
-    <div class="w-screen h-screen absolute top-0 left-0 right-0 bottom-0 bg-lblue"
-         style="z-index: -20;"
-    >
+    <div class="w-screen h-screen">
         <div id="app"
              ref="app"
              class="w-screen h-screen absolute top-0 left-0 right-0 bottom-0"
@@ -53,8 +51,9 @@
 </template>
 
 <script>
-  import {TimeToFadeIn, TimeToFadeOut, Index} from "../3D/Index";
+  import {TimeToFadeOut, Ease, Index, TranslationPosition, TimeToTranslate} from '../3D/Index';
   import '../assets/index.css';
+  import {InvertEase} from '../3D/Interpolation';
 
   const TimeToMenu = 0;
   const TimeToUI = 0.5;
@@ -63,33 +62,45 @@
     name: 'app',
 
     mounted(): void {
-      this.render = new Index(this.$refs.app);
+      this.updateViewport();
+
+      this.render = new Index(this.$refs.app, () =>
+        setTimeout(() => {
+          this.hasUi = true;
+          setTimeout(() => this.hasMenu = true, TimeToMenu * 1000);
+        }, TimeToUI * 1000)
+      );
+
       this.$nextTick(() => window.addEventListener('resize', this.resized, false));
-
-      setTimeout(() => {
-        this.hasUi = true;
-
-        setTimeout(() => this.hasMenu = true, TimeToMenu * 1000);
-      }, (TimeToFadeIn + TimeToUI) * 1000);
     },
+
     beforeDestroy(): void {
       this.render.destroy();
       window.removeEventListener('resize', this.resized, false);
     },
+
     data() {
       return {
         hasUi: false,
         hasMenu: false,
       };
     },
+
     methods: {
       redirect(url: string): void {
         this.hasUi = false;
-        this.render.startFadeOut();
-        setTimeout(() => window.location = url, TimeToFadeOut * 1000);
+        this.render.fade(TimeToFadeOut, InvertEase);
+        this.render.translate(TranslationPosition, TimeToTranslate, InvertEase, () => window.location = url);
       },
+
       resized(): void {
+        this.updateViewport();
         this.render.resize(this.$refs.app);
+      },
+
+      updateViewport(): void {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
       },
     },
   }

@@ -1,53 +1,45 @@
-// @flow
-
 import * as Three from 'three';
 import {EffectComposer} from 'three/examples/jsm/postprocessing/EffectComposer';
 import {RenderPass} from 'three/examples/jsm/postprocessing/RenderPass';
 import {UnrealBloomPass} from 'three/examples/jsm/postprocessing/UnrealBloomPass';
+import {AnimationComposer} from './AnimationComposer';
+import {Ease} from './Interpolation';
+import type {Interpolation} from './Interpolation';
+import type {InterpolationAnimationCallback} from './InterpolationAnimation';
+import {createInterpolationAnimation} from './InterpolationAnimation';
 import {XosLogo} from './XosLogo';
 
-const TimeToExposure = 4;
-const Exposure = 1;
-const TimeToFullSpeed = 2.5;
-const RotationSpeed = 12.5;
-export const TimeToFadeIn = Math.max(TimeToExposure, TimeToFullSpeed);
+type Translation = { x: number, y: number, z: number };
 
-const TimeToTranslate = 2;
-const Translation = {
+export const TimeToFadeIn = 4;
+export const TimeToFadeOut = 2;
+export const Exposure = 1;
+export const TimeToRotateIn = 2.5;
+export const RotationSpeed = 12.5;
+export const TimeToReady = Math.max(TimeToFadeIn, TimeToRotateIn);
+
+export const TimeToTranslate = 2;
+export const TranslationPosition = {
   x: 0,
   y: 8,
   z: 0,
 };
 
-export const TimeToFadeOut = 4;
-
-const CubicBezier = (x1, y1, x2, y2) => t => {
-  const
-    rt = 1 - t,
-    rt2 = rt * rt,
-
-    t2 = t * t,
-    t3 = t2 * t;
-
-  const
-    p1 = new Three.Vector2(x1, y1),
-    p2 = new Three.Vector2(x2, y2),
-    p3 = new Three.Vector2(1, 1);
-
-
-  const curve =
-    p1.multiplyScalar(3 * rt2 * t)
-      .add(p2.multiplyScalar(3 * rt * t2))
-      .add(p3.multiplyScalar(t3));
-
-  return curve.y;
-};
-
-const ease = CubicBezier(0.25, 0.1, 0.25, 1);
-const ease_in = CubicBezier(0.42, 0, 1, 1);
-
 export class Index {
-  constructor(container: Element) {
+  animationComposer: AnimationComposer;
+  camera: Three.PerspectiveCamera;
+  composer: EffectComposer;
+  renderer: Three.WebGLRenderer;
+  scene: Three.Scene;
+  logo: Three.Group;
+
+  _fade: ?number = null;
+  _rotateIn: ?number = null;
+  _translate: ?number = null;
+  _rotation: number;
+
+
+  constructor(container: Element, callback: ?InterpolationAnimationCallback = null) {
     this._createRenderer(container);
 
     this.scene = new Three.Scene();
@@ -58,121 +50,92 @@ export class Index {
     this.logo = XosLogo();
     this.scene.add(this.logo);
 
-    this.clock = new Three.Clock();
-    this.effectTime = 0;
-    this._fadeIn();
+    this.animationComposer = new AnimationComposer(this.composer);
+
+    this._rotation = this.animationComposer.add((delta, context) => {
+      this.logo.rotateY(delta * context.rotationSpeed / (2 * Math.PI));
+    }, {rotationSpeed: 0});
+
+    this.rotateIn();
+    this.fade(TimeToFadeIn, Ease, () => {
+      this.translate();
+
+      if (callback)
+        callback();
+    });
+
+    this.animationComposer.animate();
   }
 
   destroy() {
-    cancelAnimationFrame(this.animationFrameId);
-    Object.keys(this).map(key => this[key] = null);
+    this.animationComposer.destroy();
+    Object.keys(this).map(key => delete this[key]);
   }
 
-  _fadeIn() {
-    const delta = this.clock.getDelta();
-    this.effectTime += delta;
-
-    let rotationSpeed;
-
-    if (this.effectTime >= TimeToFadeIn) {
-      this.animationFrameId = requestAnimationFrame(() => this._translate());
-
-      this.renderer.toneMappingExposure = Exposure;
-      rotationSpeed = RotationSpeed;
-
-      this.effectTime = 0;
-    }
-    else {
-      this.animationFrameId = requestAnimationFrame(() => this._fadeIn());
-
-
-      const exposureValue = Math.min(this.effectTime / TimeToExposure, 1);
-      const exposureInterpolation = ease(exposureValue);
-
-      this.renderer.toneMappingExposure = Exposure * exposureInterpolation;
-
-
-      const rotationValue = Math.min(this.effectTime / TimeToFullSpeed, 1);
-      const rotationInterpolation = ease(rotationValue);
-
-      rotationSpeed = RotationSpeed * rotationInterpolation;
-    }
-
-    this._updateRotation(delta, rotationSpeed);
-    this.composer.render(delta);
-  }
-
-  _translate() {
-    const delta = this.clock.getDelta();
-    this.effectTime += delta;
-
-    if (this.effectTime >= TimeToTranslate) {
-      this.animationFrameId = requestAnimationFrame(() => this._animate());
-
-      this.camera.position.set(Translation.x, Translation.y, -200 + Translation.z);
-
-      this.effectTime = 0;
-    }
-    else {
-      this.animationFrameId = requestAnimationFrame(() => this._translate());
-
-      const translation = Math.min(this.effectTime / TimeToTranslate, 1);
-      const translationInterpolation = ease(translation);
-
-      this.camera.position.set(
-        Translation.x * translationInterpolation,
-        Translation.y * translationInterpolation,
-        -200 + Translation.z * translationInterpolation
-      );
-    }
-
-    this._updateRotation(delta, RotationSpeed);
-    this.composer.render(delta);
-  }
-
-  _animate() {
-    const delta = this.clock.getDelta();
-
-    this.animationFrameId = requestAnimationFrame(() => this._animate());
-
-    this._updateRotation(delta, RotationSpeed);
-    this.composer.render(delta);
-  }
-
-  _fadeOut() {
-    const delta = this.clock.getDelta();
-    this.effectTime += delta;
-
-    this.animationFrameId = requestAnimationFrame(() => this._fadeOut());
-
-
-    const translation = Math.min(this.effectTime / TimeToFadeOut, 1);
-    const translationInterpolation = 1 - ease(translation);
-
-    this.camera.position.set(
-      Translation.x * translationInterpolation,
-      Translation.y * translationInterpolation,
-      -200 + Translation.z * translationInterpolation
+  fade(
+    timeToFadeIn: number = TimeToFadeIn,
+    interpolation: Interpolation = Ease,
+    callback: ?InterpolationAnimationCallback = null
+  ): void {
+    this._fade = createInterpolationAnimation(
+      timeToFadeIn,
+      interpolation,
+      (interpolatedValue, context) =>
+        this.renderer.toneMappingExposure = Exposure * interpolatedValue,
+      () => {
+        this._fade = null;
+        if (callback) callback();
+      },
+      {},
+      this._fade,
+      this.animationComposer
     );
-
-
-    const exposureValue = Math.min(this.effectTime / TimeToFadeOut, 1);
-    const exposureInterpolation = 1 - ease(exposureValue);
-
-    this.renderer.toneMappingExposure = Exposure * exposureInterpolation;
-
-
-    this._updateRotation(delta, RotationSpeed);
-    this.composer.render(delta);
   }
 
-  startFadeOut() {
-    cancelAnimationFrame(this.animationFrameId);
-    this.animationFrameId = requestAnimationFrame(() => this._fadeOut());
+  rotateIn(
+    rotationSpeed: number = RotationSpeed,
+    timeToRotateIn: number = TimeToRotateIn,
+    interpolation: Interpolation = Ease,
+    callback: ?InterpolationAnimationCallback = null
+  ) {
+    this._rotateIn = createInterpolationAnimation(
+      timeToRotateIn,
+      interpolation,
+      (interpolatedValue, context) =>
+        this.animationComposer.context(this._rotation).rotationSpeed = context.rotationSpeed * interpolatedValue,
+      () => {
+        this._rotateIn = null;
+        if (callback) callback();
+      },
+      {rotationSpeed: rotationSpeed},
+      this._rotateIn,
+      this.animationComposer
+    );
   }
 
-  _updateRotation(delta, rotationSpeed) {
-    this.logo.rotateY(delta * rotationSpeed / (2 * Math.PI));
+  translate(
+    translation: Translation = TranslationPosition,
+    timeToTranslate: number = TimeToTranslate,
+    interpolation: Interpolation = Ease,
+    callback: ?InterpolationAnimationCallback = null
+  ) {
+    this._translate = createInterpolationAnimation(
+      timeToTranslate,
+      interpolation,
+      (interpolatedValue, context) => {
+        this.camera.position.set(
+          context.translation.x * interpolatedValue,
+          context.translation.y * interpolatedValue,
+          -200 + context.translation.z * interpolatedValue
+        )},
+      () => {
+        this._translate = null;
+        if (callback) callback();
+      },
+      {translation: translation},
+      this._translate,
+      this.animationComposer
+    );
   }
 
   resize(container: Element): void {
