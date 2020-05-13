@@ -1,0 +1,37 @@
+.anim-opacity {
+    transition: opacity 2s ease;
+}
+
+.anim-width {
+    display: inline-block;
+    transition: width 1.5s ease;
+    overflow: hidden;
+}
+
+.anim-height {
+    display: inline-block;
+    transition: height 1.5s ease;
+    overflow: hidden;
+}
+
+.menu-item {
+    transition: background-color 0.33s ease, color 0.33s ease;
+    background-color: #5757ff;
+    color: #ff8aff;
+
+    padding: 0.5rem 1rem;
+    display: inline-block;
+
+    text-align: left;
+}
+
+.menu-item.selected, .menu-item:hover {
+    background-color: #ff8aff;
+    color: #5757ff;
+}
+
+.menu-item:disabled {
+    background-color: #5757ff;
+    color: #000000;
+}
+

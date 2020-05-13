@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import Page from './App.vue'
+import Page from './Blog.vue'
 import store from '../store'
 import '../assets/tailwind.css'
 
