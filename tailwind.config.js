@@ -245,7 +245,6 @@ module.exports = {
         'serif',
       ],
       mono: [
-        'VT323',
         'Menlo',
         'Monaco',
         'Consolas',
@@ -253,6 +252,15 @@ module.exports = {
         '"Courier New"',
         'monospace',
       ],
+      vga: [
+        'VGA',
+        'Menlo',
+        'Monaco',
+        'Consolas',
+        '"Liberation Mono"',
+        '"Courier New"',
+        'monospace',
+      ]
     },
     fontSize: {
       xs: '0.75rem',

@@ -144,9 +144,7 @@ function addCenterConnection(
   ]), material));
 }
 
-export function XosLogo(): Three.Group {
-  const material = new Three.LineBasicMaterial({color: 0xff57ff});
-
+export function XosLogo(material: Three.LineBasicMaterial): Three.Group {
   let group = new Three.Group();
 
   addEdge(group, material, -1, -1, 1);

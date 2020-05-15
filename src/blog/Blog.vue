@@ -1,24 +1,24 @@
 <template>
-    <div class="flex flex-col items-center font-mono w-screen h-screen">
-        <div class="mt-12 flex flex-col items-center p-2 pl-6 pr-6 bg-lblue text-magenta">
-            <div class="text-2xl">
-                XOS Development Blog
-            </div>
-            <div class="text-lg">
-                The road to making an operating system, and much more...
-            </div>
-        </div>
-
-        <div class="flex flex-col items-center justify-center content-center w-full h-full">
-            <p class="text-4xl">This page is under construction.</p>
-            <a class="text-white underline" href="/">Go back</a>
-        </div>
-    </div>
+    <canvas ref="canvas" class="inset-0 w-screen h-screen">
+    </canvas>
 </template>
 
 <script>
+  import {Emulator} from '../Emulator/Emulator';
+
   export default {
-    name: "Blog"
+    name: "Blog",
+    mounted(): void {
+      this.emulator = null;
+
+      new FontFace('VGA', 'url(fonts/PxPlus_IBM_VGA9.ttf')
+        .load()
+        .then(() => this.emulator = new Emulator(this.$refs['canvas']));
+    },
+    beforeDestroy(): void {
+      if(this.emulator)
+        delete this.emulator;
+    },
   }
 </script>
 

@@ -2,6 +2,10 @@
     transition: opacity 2s ease;
 }
 
+.anim-opacity-fast {
+    transition: opacity 0.33s ease;
+}
+
 .anim-width {
     display: inline-block;
     transition: width 1.5s ease;
@@ -14,24 +18,51 @@
     overflow: hidden;
 }
 
-.menu-item {
-    transition: background-color 0.33s ease, color 0.33s ease;
+.anim-color {
+    transition: background-color 0.33s ease, color 0.33s ease, border-color 0.33s ease;
+}
+
+.anim-color-opacity-fast {
+    transition: background-color 0.33s ease, color 0.33s ease, border-color 0.33s ease, opacity 0.33s ease;
+}
+
+.anim-width-color {
+    display: inline-block;
+    overflow: hidden;
+    transition: background-color 0.33s ease, color 0.33s ease, border-color 0.33s ease, width 1.5s ease;
+}
+
+.button {
     background-color: #5757ff;
     color: #ff8aff;
 
-    padding: 0.5rem 1rem;
-    display: inline-block;
-
-    text-align: left;
+    border: 1px solid #5757ff;
 }
 
-.menu-item.selected, .menu-item:hover {
-    background-color: #ff8aff;
-    color: #5757ff;
+.button:hover {
+    background-color: #000000;
+    color: #ffffff;
+
+    border-color: #ffffff;
 }
 
-.menu-item:disabled {
-    background-color: #5757ff;
-    color: #000000;
+.cursor-8bit-underline {
+    cursor: url("cursor.png") 5 1, auto;
+}
+
+.cursor-8bit-block {
+    cursor: url("cursor.png") 5 8, auto;
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 1s ease;
+}
+
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+}
+
+.w-menu {
+    width: 20rem;
 }
 

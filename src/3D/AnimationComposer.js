@@ -29,6 +29,17 @@ export class AnimationComposer {
     this._animationFrameId = requestAnimationFrame(() => this._animate());
   }
 
+  singleStep(): void {
+    const delta = this._clock.getDelta();
+
+    this._passes.forEach((pass, id) => pass(delta, this._contexts[id]));
+    this._composer.render(delta);
+  }
+
+  restartClock(): void {
+    this._clock.getDelta();
+  }
+
   stop(): void {
     if (this._animationFrameId !== null)
       cancelAnimationFrame(this._animationFrameId);
@@ -59,10 +70,6 @@ export class AnimationComposer {
 
   _animate() {
     this._animationFrameId = requestAnimationFrame(() => this._animate());
-
-    const delta = this._clock.getDelta();
-
-    this._passes.forEach((pass, id) => pass(delta, this._contexts[id]));
-    this._composer.render(delta);
+    this.singleStep();
   }
 }
