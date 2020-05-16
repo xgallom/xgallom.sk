@@ -10,12 +10,18 @@
             <div class="absolute w-screen h-screen font-vga inset-0 flex flex-col items-center anim-opacity z-20"
                  :class="{'opacity-0': !hasUi}"
             >
-                <div class="mt-12 flex flex-col items-center p-2 pl-6 pr-6 anim-color"
-                     :class="{'bg-lblue': !isGlitching, 'bg-white': isGlitching,
-                 'text-magenta': !isGlitching, 'text-black': isGlitching,
+                <div ref="header-bar"
+                     class="mt-12 flex flex-col items-center p-2 pl-6 pr-6"
+                     :class="{/*'bg-black': !isGlitching, 'bg-white': isGlitching,*/
+                  'anim-color': hasColorAnim,
+                 'text-magenta': !isGlitching,
+                 /*'text-white': isGlitching,*/
+                 'text-white': isGlitching && activeMenuEntry === -1,
+                 'text-black': isGlitching && activeMenuEntry !== -1,
+                 /*'border-dmagenta': !isGlitching, 'border-white': isGlitching,*/
                  }"
 
-                     @mouseenter="startGlitch(2)"
+                     @mouseenter="startGlitch(0)"
                      @mouseleave="stopGlitch"
                      @mousedown="stopGlitch"
                 >
@@ -27,60 +33,64 @@
                     </div>
                 </div>
 
-                <div class="flex flex-row w-screen flex-grow items-start justify-start pt-12 pb-12 mt-24 mb-24 self-start">
-                    <div class="flex flex-row ml-24 border-2 anim-width-color"
+                <div class="flex flex-row w-screen flex-grow items-center justify-start pb-12 mt-24 mb-24 self-start">
+                    <div class="flex flex-row ml-24 xl:ml-48 border-0 anim-width-color box-content"
                          :class="{'w-0': !hasMenu, 'w-menu': hasMenu,
-                     'border-lblue': !isGlitching, 'border-white': isGlitching,
+                     /*'border-black': !isGlitching, 'border-white': isGlitching,*/
                      }"
-
-                         @mouseenter="startGlitch"
-                         @mouseleave="stopGlitch"
-                         @mousedown="stopGlitch"
                     >
                         <div class="flex flex-col">
-                            <MenuItem
-                                    :isGlitching="isGlitching"
-                                    :menuEntry="0"
-                                    :activeMenuEntry="activeMenuEntry"
-                                    url="blog"
-                                    title="Development Blog"
+                            <MenuItem ref="menu-0"
+                                      :isGlitching="isGlitching"
+                                      :hasColorAnim="hasColorAnim"
+                                      :menuEntry="0"
+                                      :activeMenuEntry="activeMenuEntry"
+                                      url="blog"
+                                      title="Development Blog"
 
-                                    @redirect="redirect"
-                                    @setMenuEntry="setMenuEntry"
-                                    @unsetMenuEntry="unsetMenuEntry"
+                                      @redirect="redirect"
+                                      @setMenuEntry="setMenuEntry"
+                                      @unsetMenuEntry="unsetMenuEntry"
                             />
-                            <MenuItem
-                                    :isGlitching="isGlitching"
-                                    :menuEntry="1"
-                                    :activeMenuEntry="activeMenuEntry"
-                                    url="https://www.github.com/xgallom/xos"
-                                    title="XOS Repository"
+                            <MenuItem ref="menu-1"
+                                      :isGlitching="isGlitching"
+                                      :hasColorAnim="hasColorAnim"
+                                      :menuEntry="1"
+                                      :activeMenuEntry="activeMenuEntry"
+                                      url="https://www.github.com/xgallom/xos"
+                                      title="XOS Repository"
 
-                                    @redirect="redirect"
-                                    @setMenuEntry="setMenuEntry"
-                                    @unsetMenuEntry="unsetMenuEntry"
+                                      @redirect="redirect"
+                                      @setMenuEntry="setMenuEntry"
+                                      @unsetMenuEntry="unsetMenuEntry"
 
-                                    external
+                                      external
                             />
-                            <MenuItem
-                                    :isGlitching="isGlitching"
-                                    :menuEntry="2"
-                                    :activeMenuEntry="activeMenuEntry"
-                                    url="https://www.github.com/xgallom"
-                                    title="Github"
+                            <MenuItem ref="menu-2"
+                                      :isGlitching="isGlitching"
+                                      :hasColorAnim="hasColorAnim"
+                                      :menuEntry="2"
+                                      :activeMenuEntry="activeMenuEntry"
+                                      url="https://www.github.com/xgallom"
+                                      title="Github"
 
-                                    @redirect="redirect"
-                                    @setMenuEntry="setMenuEntry"
-                                    @unsetMenuEntry="unsetMenuEntry"
+                                      @redirect="redirect"
+                                      @setMenuEntry="setMenuEntry"
+                                      @unsetMenuEntry="unsetMenuEntry"
 
-                                    external
+                                      external
                             />
                         </div>
                     </div>
                 </div>
 
-                <div class="mb-0 flex items-center justify-center anim-color"
-                     :class="{'text-magenta': !isGlitching, 'text-white': isGlitching}"
+                <div ref="footer-bar"
+                     class="mb-1 flex items-center justify-center"
+                     :class="{'anim-color': hasColorAnim,
+                                 'text-magenta': !isGlitching,
+                                 /*'text-white': isGlitching,*/
+                                 'text-white': isGlitching && activeMenuEntry === -1,
+                                 'text-black': isGlitching && activeMenuEntry !== -1}"
                 >
                     Copyright © Milan Gallo, 2020
                 </div>
@@ -93,7 +103,7 @@
         >
             <div class="absolute flex inset-0 items-center justify-center content-center bg-transparent">
                 <div class="anim-opacity-fast"
-                     :class="{'opacity-0': !loading}"
+                     :class="{'opacity-0': loading <= 0}"
                      style="width: 5.75rem;"
                 >
                     Loading{{'.'.repeat(Math.max(this.loading - 1, 0))}}
@@ -118,7 +128,7 @@
   import MenuItem from './MenuItem';
 
   const TimeToMenu = 0;
-  const TimeToUI = 0.5;
+  const TimeToUI = 0.25;
 
   type Index3DInterface = {
     TimeToFadeIn: number,
@@ -132,6 +142,7 @@
     TimeToTranslate: number,
     TranslationPosition: { x: number, y: number, z: number },
 
+    Ease: (number) => number,
     InvertEase: (number) => number,
 
     Index: Class,
@@ -146,6 +157,8 @@
     mounted(): void {
       this.cancelGlitchHandler = null;
       this.loadingHandler = null;
+      this.fadeInHandler = null;
+
 
       this.updateViewport();
 
@@ -162,7 +175,7 @@
           this.render = new Index3D.Index(this.$refs.app);
           this.$nextTick(() => window.addEventListener('resize', this.resized, false));
 
-          let remainingTime = Math.max(1000 - Math.round(performance.now() - loadingStartedTime), 0);
+          let remainingTime = Math.max(1500 - Math.round(performance.now() - loadingStartedTime), 0);
 
           setTimeout(() => {
             clearTimeout(this.loadingHandler);
@@ -189,6 +202,7 @@
         hasUi: false,
         hasMenu: false,
         hasGlitching: false,
+        hasColorAnim: false,
         activeMenuEntry: -1,
       };
     },
@@ -210,6 +224,7 @@
 
       isGlitching(): void {
         this.render.glitch(this.isGlitching);
+        this.render.glitchColor(this.isGlitching);
         this.glitchSound(this.isGlitching);
       }
     },
@@ -220,8 +235,6 @@
           this.uiSynth = new Tone.Synth({
             oscillator: {
               type: "pwm",
-              //type: "pwm",
-              //modulationFrequency: 0.2,
             },
             envelope: {
               attack: 0.005,
@@ -245,7 +258,7 @@
                 setTimeout(() => {
                   let noise = new Tone.Noise("pink");
 
-                  this.noiseVolume = new Tone.Volume({volume: -18, mute: true});
+                  this.noiseVolume = new Tone.Volume({volume: -12, mute: true});
 
                   noise.chain(/*autoFilter,*/ this.noiseVolume, Tone.Master);
                   noise.start();
@@ -276,11 +289,22 @@
 
       setMenuEntry(menuEntry: number): void {
         this.activeMenuEntry = menuEntry;
+
+        clearTimeout(this.fadeInHandler);
+        this.fadeInHandler = null;
+
         this.startGlitch();
       },
 
       unsetMenuEntry(): void {
-        this.activeMenuEntry = -1;
+        this.fadeInHandler = setTimeout(() => {
+          this.hasColorAnim = true;
+          this.hasGlitching = false;
+          this.activeMenuEntry = -1;
+
+          this.render.fade(0.33, t => t * t, () => this.hasColorAnim = false);
+          this.render.glitchColor(false);
+        }, 50);
       },
 
       resized(): void {
@@ -293,10 +317,11 @@
         document.documentElement.style.setProperty('--vh', `${vh}px`);
       },
 
-      startGlitch(killOff: number = 1): void {
+      startGlitch(killOff: number = 1, callback: ?() => void = null): void {
         this.hasGlitching = true;
 
         this.render.glitch(this.isGlitching);
+        this.render.glitchColor(this.isGlitching);
         this.glitchSound(this.isGlitching);
 
         clearTimeout(this.cancelGlitchHandler);
@@ -305,7 +330,11 @@
           this.cancelGlitchHandler = setTimeout(() => {
             this.cancelGlitchHandler = null;
             this.render.glitch(false);
+            this.render.glitchColor(this.isGlitching ? 2 : 0);
             this.glitchSound(false);
+
+            if (callback)
+              callback();
           }, killOff * Math.round(Math.random() * 400 + 400));
         else
           this.cancelGlitchHandler = null;
@@ -322,7 +351,7 @@
       },
 
       glitchSound(isGlitching: boolean): void {
-        this.noiseVolume.mute = !isGlitching;
+        this.noiseVolume.set('mute', !isGlitching);
       }
     },
   }

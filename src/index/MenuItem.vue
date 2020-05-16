@@ -1,12 +1,13 @@
 <template>
-    <div class="w-menu anim-color inline-block p-2 pl-4 pr-4 cursor-pointer flex flex-row flex-no-wrap"
-         :class="isGlitching ?
-                                (activeMenuEntry === menuEntry ? {
-                                  'bg-black': true, 'text-white': true} : {
-                                  'bg-white': true, 'text-black': true}
+    <div class="w-menu inline-block p-2 pl-4 pr-4 cursor-pointer flex flex-row flex-no-wrap"
+         :class="{...(isGlitching ?
+                                (activeMenuEntry === menuEntry || activeMenuEntry === -1 ? {
+                                  /*'bg-black': true, */'text-white': true} : {
+                                  /*'bg-white': true, */'text-black': true}
                                   ) : {
-                                  'bg-lblue': true, 'text-magenta': true
-                                }"
+                                  /*'bg-black': true, */'text-magenta': true
+                                }),
+                                'anim-color': hasColorAnim}"
 
          @mouseenter="enter"
          @mouseleave="leave"
@@ -14,7 +15,7 @@
     >
         <div>[{{menuEntry}}] {{title}}</div>
         <div class="flex-grow"></div>
-        <div v-if="external">{extern}</div>
+        <div v-if="external">&lt;extern&gt;</div>
     </div>
 </template>
 
@@ -23,8 +24,9 @@
     name: "MenuItem",
     props: {
       isGlitching: Boolean,
+      hasColorAnim: Boolean,
       menuEntry: Number,
-      activeMenuEntry: Boolean,
+      activeMenuEntry: Number,
       url: String,
       title: String,
       external: Boolean

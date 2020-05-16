@@ -1,10 +1,14 @@
 <template>
+    <!--TODO: cursor-none? -->
     <canvas ref="canvas" class="inset-0 w-screen h-screen">
     </canvas>
 </template>
 
 <script>
-  import {Emulator} from '../Emulator/Emulator';
+  import {EmulatorInterface} from '../Emulator/EmulatorInterface';
+  import {Content} from './Content';
+
+  let Emulator: Class<EmulatorInterface>;
 
   export default {
     name: "Blog",
@@ -13,12 +17,25 @@
 
       new FontFace('VGA', 'url(fonts/PxPlus_IBM_VGA9.ttf')
         .load()
-        .then(() => this.emulator = new Emulator(this.$refs['canvas']));
+        .then(() => {
+          import('../Emulator/Emulator').then(imported => {
+            Emulator = imported.Emulator;
+
+            this.run();
+          })
+        });
     },
     beforeDestroy(): void {
       if(this.emulator)
         delete this.emulator;
     },
+    methods: {
+      run(): void {
+        this.emulator = new Emulator(this.$refs['canvas']);
+
+        this.emulator.run(Content);
+      }
+    }
   }
 </script>
 

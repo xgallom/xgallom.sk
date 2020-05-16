@@ -1,102 +1,72 @@
-type Dimensions = { width: number, height: number };
-type Position = { x: number, y: number };
+import {canvasClear} from './Context';
+import type {EmulatorContext} from './Context';
+import type {EmulatorInterface} from './EmulatorInterface';
+import {Font} from './Font';
+import type {MainInterface} from './MainInterface';
+import {EmulatorCommandType} from './UpdateCallback';
+import type {EmulatorCommand} from './UpdateCallback';
 
-const CharacterDimensions: Dimensions = {
-  width: 9,
-  height: 16,
+let Main: Object<Class<MainInterface>> = {
+
 };
 
-// Standard VGA color palette
-const Color = [
-  '#000000',
-  '#0000AA',
-  '#00AA00',
-  '#00AAAA',
-  '#AA0000',
-  '#AA00AA',
-  '#AA5500',
-  '#AAAAAA',
-  '#555555',
-  '#5555FF',
-  '#55FF55',
-  '#55FFFF',
-  '#FF5555',
-  '#FF55FF',
-  '#FFFF55',
-  '#FFFFFF',
-];
-
-// Named color mapping
-const ColorName = {
-  Black: Color[0],
-  Blue: Color[1],
-  Green: Color[2],
-  Cyan: Color[3],
-  Red: Color[4],
-  Magenta: Color[5],
-  Brown: Color[6],
-  Gray: Color[7],
-
-  DarkGray: Color[8],
-  BrightBlue: Color[9],
-  BrightGreen: Color[10],
-  BrightCyan: Color[11],
-  BrightRed: Color[12],
-  BrightMagenta: Color[13],
-  Yellow: Color[14],
-  White: Color[15],
-
-  Foreground: Color[7],
-  Background: Color[0],
-};
-
-CanvasRenderingContext2D.prototype.clear = CanvasRenderingContext2D.prototype.clear || function () {
-  const fill = this.fillStyle;
-  this.fillStyle = ColorName.Background;
-
-  this.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-  this.fillStyle = fill;
-};
-
-export class Emulator {
-  windowDimensions: Dimensions;
-  canvas: HTMLCanvasElement;
-  context: CanvasRenderingContext2D;
+export class Emulator implements EmulatorInterface {
+  context: EmulatorContext = {};
+  content: ?MainInterface = null;
 
   constructor(canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
+    this.context.canvas = canvas;
 
-    this.windowDimensions = {
+    this.context.windowDimensions = {
       width: window.innerWidth,
       height: window.innerHeight
     };
 
-    this.canvas.width = this.windowDimensions.width;
-    this.canvas.height = this.windowDimensions.height;
+    this.context.canvas.width = this.context.windowDimensions.width;
+    this.context.canvas.height = this.context.windowDimensions.height;
 
-    this.context = this.canvas.getContext('2d', {alpha: false});
+    this.context.canvasContext = this.context.canvas.getContext('2d', {alpha: false});
 
-    this.context.clear();
+    canvasClear(this.context.canvasContext);
 
-    this.context.font = `16px VGA`;
-    this.context.textBaseline = 'middle';
-    this.context.textAlign = 'center';
-    this.context.fillStyle = ColorName.White;
+    this.context.canvasContext.textBaseline = 'top';
+    this.context.canvasContext.textAlign = 'left';
+    this.context.canvasContext.font = Font.Font;
+    this.context.canvasContext.fillStyle = Font.ColorName.Foreground;
+  }
 
-    this.context.fillText('Under Construction', this.windowDimensions.width / 2, this.windowDimensions.height / 2);
+  run(content: Object): void {
+    if(!Main.hasOwnProperty(content.type))
+      this.load(content.type, () => this.run(content));
+    else {
+      if(this.content)
+        this.content.deinitialize();
 
-    // this.context.fillRect(200 - 1, 200 - 1, 4 * CharacterDimensions.width + 2, 4 * CharacterDimensions.height + 2);
-    //
-    // this.context.fillStyle = ColorName.BrightMagenta;
-    //
-    // this.context.fillText('████', 200, 200);
-    //
-    // this.context.fillText('█┌┐█', 200 + 0 * CharacterDimensions.width, 200 + CharacterDimensions.height);
-    //
-    // this.context.fillText('█└┘█', 200 + 0 * CharacterDimensions.width, 200 + 2 * CharacterDimensions.height);
-    //
-    // this.context.fillText('████', 200 + 0 * CharacterDimensions.width, 200 + 3 * CharacterDimensions.height);
+      this.content = new Main[content.type](this.context, content);
+
+      this.content.run(command => this.update(command));
+    }
+  }
+
+  load(contentType: string, callback: ?() => void = null): void {
+    import(`./${contentType}/Main`).then((imported: {Main: Class<MainInterface>}): void => {
+      Main[contentType] = imported.Main;
+
+      if(callback)
+        callback();
+    });
+  }
+
+  update(command: EmulatorCommand): void {
+    switch (command.command) {
+      case EmulatorCommandType.Run:
+        this.run(command.data);
+        break;
+
+      default:
+        console.warn('Unhandled command: ', command);
+        break;
+    }
   }
 }
 

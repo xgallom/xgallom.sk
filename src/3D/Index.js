@@ -25,16 +25,19 @@ export const TimeToLoad = 1;
 
 export const TimeToTranslate = 2;
 export const TranslationPosition = {
-  x: 0,
+  x: 24,
   y: 8,
   z: 0,
 };
 
-export {InvertEase} from './Interpolation';
+export {Ease, InvertEase} from './Interpolation';
 
 const MaterialColor = {
+  [0]: 0xff57ff,
   [false]: 0xff57ff,
+  [1]: 0xffffff,
   [true]: 0xffffff,
+  [2]: 0x000000,
 };
 
 const BloomPassStrength = {
@@ -65,7 +68,7 @@ export class Index {
     this._createCamera(container);
     this._createComposer(container);
 
-    this.material = new Three.LineBasicMaterial({color: MaterialColor[false]});
+    this.material = new Three.LineBasicMaterial({color: MaterialColor[0]});
     this.logo = XosLogo(this.material);
     this.scene.add(this.logo);
 
@@ -105,11 +108,10 @@ export class Index {
   glitch(isGlitching: boolean): void {
     this.glitchPass.enabled = isGlitching;
 
-    this.glitchColor(isGlitching);
     this.glitchBloomPass(isGlitching);
   }
 
-  glitchColor(isGlitching: boolean): void {
+  glitchColor(isGlitching: boolean|number): void {
     this.material.color.set(MaterialColor[isGlitching]);
   }
 

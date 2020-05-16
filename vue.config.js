@@ -4,13 +4,13 @@ module.exports = {
             entry: 'src/index/main.js',
             template: 'public/index.html',
             filename: 'index.html',
-            title: 'Milan Gallo - xgallom.sk',
+            title: 'Milan Gallo',
         },
         blog: {
             entry: 'src/blog/main.js',
             template: 'public/index.html',
             filename: 'blog.html',
-            title: 'Blog - xgallom.sk',
+            title: 'Development Blog',
         },
     },
 };
