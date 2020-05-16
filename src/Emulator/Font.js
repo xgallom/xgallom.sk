@@ -8,21 +8,21 @@ const CharacterDimensions = {
 // Standard VGA color palette
 const Color = [
   '#000000',
-  '#0000AA',
-  '#00AA00',
-  '#00AAAA',
-  '#AA0000',
-  '#AA00AA',
-  '#AA5500',
-  '#AAAAAA',
+  '#0000aa',
+  '#00aa00',
+  '#00aaaa',
+  '#aa0000',
+  '#aa00aa',
+  '#aa5500',
+  '#aaaaaa',
   '#555555',
-  '#5555FF',
-  '#55FF55',
-  '#55FFFF',
-  '#FF5555',
-  '#FF55FF',
-  '#FFFF55',
-  '#FFFFFF',
+  '#5555ff',
+  '#55ff55',
+  '#55ffff',
+  '#ff5555',
+  '#ff55ff',
+  '#ffff55',
+  '#ffffff',
 ];
 
 // Named color mapping
@@ -45,8 +45,8 @@ const ColorName = {
   Yellow: Color[14],
   White: Color[15],
 
-  Foreground: Color[7],
-  Background: Color[0],
+  Fg: Color[7],
+  Bg: Color[0],
 };
 
 export const Font = {

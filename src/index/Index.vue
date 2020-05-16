@@ -40,8 +40,7 @@
                      }"
                     >
                         <div class="flex flex-col">
-                            <MenuItem ref="menu-0"
-                                      :isGlitching="isGlitching"
+                            <MenuItem :isGlitching="isGlitching"
                                       :hasColorAnim="hasColorAnim"
                                       :menuEntry="0"
                                       :activeMenuEntry="activeMenuEntry"
@@ -52,8 +51,7 @@
                                       @setMenuEntry="setMenuEntry"
                                       @unsetMenuEntry="unsetMenuEntry"
                             />
-                            <MenuItem ref="menu-1"
-                                      :isGlitching="isGlitching"
+                            <MenuItem :isGlitching="isGlitching"
                                       :hasColorAnim="hasColorAnim"
                                       :menuEntry="1"
                                       :activeMenuEntry="activeMenuEntry"
@@ -66,10 +64,22 @@
 
                                       external
                             />
-                            <MenuItem ref="menu-2"
-                                      :isGlitching="isGlitching"
+                            <MenuItem :isGlitching="isGlitching"
                                       :hasColorAnim="hasColorAnim"
                                       :menuEntry="2"
+                                      :activeMenuEntry="activeMenuEntry"
+                                      url="https://www.github.com/xgallom/xgallom.sk"
+                                      title="xgallom.sk Repository"
+
+                                      @redirect="redirect"
+                                      @setMenuEntry="setMenuEntry"
+                                      @unsetMenuEntry="unsetMenuEntry"
+
+                                      external
+                            />
+                            <MenuItem :isGlitching="isGlitching"
+                                      :hasColorAnim="hasColorAnim"
+                                      :menuEntry="3"
                                       :activeMenuEntry="activeMenuEntry"
                                       url="https://www.github.com/xgallom"
                                       title="Github"
@@ -256,9 +266,9 @@
             this.running = true;
             this.$nextTick(() => this.render.run(() =>
                 setTimeout(() => {
-                  let noise = new Tone.Noise("pink");
+                  let noise = new Tone.Noise("white");
 
-                  this.noiseVolume = new Tone.Volume({volume: -12, mute: true});
+                  this.noiseVolume = new Tone.Volume({volume: -13, mute: true});
 
                   noise.chain(/*autoFilter,*/ this.noiseVolume, Tone.Master);
                   noise.start();

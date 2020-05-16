@@ -64,11 +64,11 @@ export class Main implements MainInterface {
 
     this.initialRender();
 
+    this.render();
+
     Object.entries(this.event).forEach(([key, handler]) =>
       document.addEventListener(key, handler)
     );
-
-    this.render();
   }
 
   keyDown(event: KeyboardEvent): void {
@@ -93,9 +93,9 @@ export class Main implements MainInterface {
   }
 
   render(): void {
-    this.context.canvasContext.fillStyle = Font.ColorName.Background;
+    this.context.canvasContext.fillStyle = Font.ColorName.Bg;
     this.drawBackground(GrubMenuOffset.x, GrubMenuOffset.y, GrubMenuEnd.x, GrubMenuEnd.y);
-    this.context.canvasContext.fillStyle = Font.ColorName.Foreground;
+    this.context.canvasContext.fillStyle = Font.ColorName.Fg;
 
     this.selection.forEach((entry, index) => {
       const y = GrubMenuOffset.y + index;
@@ -103,13 +103,13 @@ export class Main implements MainInterface {
 
       if (index === this.selected) {
         this.drawBackground(GrubMenuOffset.x, y, GrubMenuEnd.x, y + 1);
-        this.context.canvasContext.fillStyle = Font.ColorName.Background;
+        this.context.canvasContext.fillStyle = Font.ColorName.Bg;
         title = '*' + entry.title;
       }
 
       this.drawCharacters(title, GrubMenuOffset.x, y);
 
-      this.context.canvasContext.fillStyle = Font.ColorName.Foreground;
+      this.context.canvasContext.fillStyle = Font.ColorName.Fg;
     });
   }
 

@@ -32,7 +32,7 @@ export class Emulator implements EmulatorInterface {
     this.context.canvasContext.textBaseline = 'top';
     this.context.canvasContext.textAlign = 'left';
     this.context.canvasContext.font = Font.Font;
-    this.context.canvasContext.fillStyle = Font.ColorName.Foreground;
+    this.context.canvasContext.fillStyle = Font.ColorName.Fg;
   }
 
   run(content: Object): void {
