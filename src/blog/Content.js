@@ -4,11 +4,11 @@ export const Content = {
   entries: [
     {
       title: 'OS Development Diary',
-      type: 'linux',
+      type: 'linux_boot',
     },
     {
       title: 'Data Oriented Design in C++',
-      type: 'linux',
+      type: 'linux_boot',
     },
   ],
 };
