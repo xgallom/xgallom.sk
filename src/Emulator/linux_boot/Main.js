@@ -4,6 +4,7 @@ import type {Dimensions} from '../Dimensions';
 import {Font} from '../Font';
 import type {MainInterface} from '../MainInterface';
 import type {Position} from '../Position';
+import {EmulatorCommandType} from '../UpdateCallback';
 import type {EmulatorUpdateCallback} from '../UpdateCallback';
 import {BootMessages} from './BootMessages';
 
@@ -47,7 +48,10 @@ export class Main implements MainInterface {
       if (this.messageIndex === BootMessages.length) {
         this.render();
 
-        console.info('Done');
+        this.updateCallback({
+          command: EmulatorCommandType.Run,
+          data: this.content.system,
+        });
         return;
       }
       else {

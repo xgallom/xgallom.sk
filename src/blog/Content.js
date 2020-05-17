@@ -3,12 +3,19 @@ export const Content = {
   title: 'Development Blog  version 2.04',
   entries: [
     {
-      title: 'OS Development Diary',
+      title: 'XOS Development Diary',
       type: 'linux_boot',
+      system: {
+        title: 'XOS Development Diary',
+        type: 'linux_shell',
+      },
     },
     {
       title: 'Data Oriented Design in C++',
       type: 'linux_boot',
+      system: {
+        type: 'linux_shell',
+      },
     },
   ],
 };

@@ -265,5 +265,5 @@ export const BootMessages: Array<BootMessage> = [
   {duration: 500, message: '         Starting %White%Network Manager Script Dispatcher Service%Fg%...'},
   {duration: 0, message: '[  %BrightGreen%OK%Fg%  ] Started %White%Network Manager Script Dispatcher Service%Fg%.'},
   {duration: 0, message: '[   24.914808] kauditd_printk_skb: 9 callbacks suppressed'},
-  {duration: 500, message: '[   24.914811] audit: type=1130 audit(1589640753.466:39): pid=1 uid=0 auid=4294967295 ses-4294967295 msg=\'unit=systemd-rfkill conn="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success\''},
+  {duration: 1500, message: '[   24.914811] audit: type=1130 audit(1589640753.466:39): pid=1 uid=0 auid=4294967295 ses-4294967295 msg=\'unit=systemd-rfkill conn="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success\''},
 ];
