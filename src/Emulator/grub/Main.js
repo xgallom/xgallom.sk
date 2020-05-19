@@ -82,10 +82,12 @@ export class Main implements MainInterface {
         break;
 
       case 'Enter':
-        this.updateCallback({
-          command: EmulatorCommandType.Run,
-          data: this.selection[this.selected],
-        });
+        if(this.selection[this.selected].enabled) {
+          this.updateCallback({
+            command: EmulatorCommandType.Run,
+            data: this.selection[this.selected],
+          });
+        }
         return;
     }
 

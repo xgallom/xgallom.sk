@@ -35,6 +35,13 @@ export class Emulator implements EmulatorInterface {
     this.context.canvasContext.fillStyle = Font.ColorName.Fg;
   }
 
+  deinitialize(): void {
+    if(this.content) {
+      this.content.deinitialize();
+      this.content = null;
+    }
+  }
+
   run(content: Object): void {
     if(!Main.hasOwnProperty(content.type))
       this.load(content.type, () => this.run(content));

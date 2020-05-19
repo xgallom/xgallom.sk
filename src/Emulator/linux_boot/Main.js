@@ -26,11 +26,19 @@ export class Main implements MainInterface {
   }
 
   run(updateCallback: EmulatorUpdateCallback): void {
-    this.updateCallback = updateCallback;
+    if (this.content.skipBoot) {
+      updateCallback({
+        command: EmulatorCommandType.Run,
+        data: this.content.system,
+      });
+    }
+    else {
+      this.updateCallback = updateCallback;
 
-    this.computeCanvasDimensions();
+      this.computeCanvasDimensions();
 
-    this.initialRender();
+      this.initialRender();
+    }
   }
 
   initialRender(): void {
@@ -77,7 +85,7 @@ export class Main implements MainInterface {
       if (Font.ColorName.hasOwnProperty(subMessage)) {
         line += '%' + subMessage + '%';
       }
-      else if(lineLength + subMessage.length >= this.canvasDimensions.width) {
+      else if (lineLength + subMessage.length >= this.canvasDimensions.width) {
         const splitOffset = this.canvasDimensions.width - lineLength;
         this.messageBuffer.push(line + subMessage.substr(0, splitOffset));
 

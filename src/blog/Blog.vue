@@ -26,8 +26,10 @@
         });
     },
     beforeDestroy(): void {
-      if(this.emulator)
+      if(this.emulator) {
+        this.emulator.deinitialize();
         delete this.emulator;
+      }
     },
     methods: {
       run(): void {
