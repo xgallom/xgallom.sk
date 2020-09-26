@@ -23,12 +23,14 @@ export class Program implements ProgramInterface {
 
   event: Object<EmulatorEventHandler> = {
     keydown: null,
+    wheel: null,
   };
 
   constructor(args: Array<string>): ProgramInterface {
     this.args = args;
 
     this.event.keydown = event => this.keyDown(event);
+    this.event.wheel = event => this.onMouseWheel(event);
   }
 
   run(linux: Main, updateCallback: ProgramUpdateCallback): void {
@@ -190,8 +192,25 @@ export class Program implements ProgramInterface {
           command: ProgramCommandType.Return,
           data: 0
         });
-        return;
+        return false;
+
+      case 'Backspace':
+        event.preventDefault();
+        break;
     }
+
+    this.render();
+    return false;
+  }
+
+  onMouseWheel(event: WheelEvent): void {
+    this.contentBufferPosition = Math.max(
+      Math.min(
+        this.contentBufferPosition + Math.round(event.deltaY / Font.CharacterDimensions.height),
+        this.contentBuffer.length - this.contentDimensions.height
+      ),
+      0
+    );
 
     this.render();
   }
@@ -254,6 +273,14 @@ export class Program implements ProgramInterface {
 
         break;
 
+      case 'header':
+        this.contentBuffer.push(offset + `%BrightRed%${content.title}%White%`);
+
+        for (const subContent of content.content)
+          this.addContent(subContent, depth);
+
+        break;
+
       case 'paragraph':
         this.addLine(depth, ...content.content.map(line => offset + line), '');
         break;
@@ -261,9 +288,11 @@ export class Program implements ProgramInterface {
       case 'text_image':
         const length = content.content[0].length;
 
-        const textImageOffset = ' '.repeat(((this.contentDimensions.width - length) / 2) | 0);
+        const textImageOffset = offset + ' '.repeat(
+          ((this.contentDimensions.width - length - offset.length) / 2) | 0
+        );
 
-        this.contentBuffer.push('', ...content.content.map(line => textImageOffset + line), '', '');
+        this.contentBuffer.push(...content.content.map(line => textImageOffset + line), '', '');
         break;
 
       case 'list':

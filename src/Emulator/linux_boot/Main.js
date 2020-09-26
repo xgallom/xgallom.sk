@@ -3,7 +3,6 @@ import type {EmulatorContext} from '../Context';
 import type {Dimensions} from '../Dimensions';
 import {Font} from '../Font';
 import type {MainInterface} from '../MainInterface';
-import type {Position} from '../Position';
 import {EmulatorCommandType} from '../UpdateCallback';
 import type {EmulatorUpdateCallback} from '../UpdateCallback';
 import {BootMessages} from './BootMessages';
@@ -68,7 +67,7 @@ export class Main implements MainInterface {
         this.addMessageToBuffer(message.message);
 
         if (message.duration) {
-          setTimeout(() => this.addMessage(), message.duration);
+          setTimeout(() => this.addMessage(), message.duration / this.content.bootSpeed);
           break;
         }
       }

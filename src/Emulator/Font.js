@@ -47,6 +47,17 @@ const ColorName = {
 
   Fg: Color[7],
   Bg: Color[0],
+
+  Cpp: Color[14],
+  Kw: Color[14],
+  Lit: Color[13],
+  Mcr: Color[12],
+  Tp: Color[9],
+  Fn: Color[11],
+  Gl: Color[11],
+  Cm: Color[7],
+  Tmpl: Color[4],
+  '@': Color[15],
 };
 
 export const Font = {

@@ -244,7 +244,7 @@
         Tone.start().then(() => {
           this.uiSynth = new Tone.Synth({
             oscillator: {
-              type: "pwm",
+              type: 'pwm',
             },
             envelope: {
               attack: 0.005,
@@ -266,9 +266,9 @@
             this.running = true;
             this.$nextTick(() => this.render.run(() =>
                 setTimeout(() => {
-                  let noise = new Tone.Noise("white");
+                  let noise = new Tone.Noise('white');
 
-                  this.noiseVolume = new Tone.Volume({volume: -13, mute: true});
+                  this.noiseVolume = new Tone.Volume({volume: -18, mute: true});
 
                   noise.chain(/*autoFilter,*/ this.noiseVolume, Tone.Master);
                   noise.start();
@@ -307,14 +307,15 @@
       },
 
       unsetMenuEntry(): void {
-        this.fadeInHandler = setTimeout(() => {
-          this.hasColorAnim = true;
-          this.hasGlitching = false;
-          this.activeMenuEntry = -1;
+        if (this.hasUi)
+          this.fadeInHandler = setTimeout(() => {
+            this.hasColorAnim = true;
+            this.hasGlitching = false;
+            this.activeMenuEntry = -1;
 
-          this.render.fade(0.33, t => t * t, () => this.hasColorAnim = false);
-          this.render.glitchColor(false);
-        }, 50);
+            this.render.fade(0.33, t => t * t, () => this.hasColorAnim = false);
+            this.render.glitchColor(false);
+          }, 50);
       },
 
       resized(): void {
@@ -355,9 +356,7 @@
       },
 
       clickSound(): void {
-        this.$nextTick(() => {
-          this.uiSynth.triggerAttackRelease("D3", "8n");
-        });
+        this.$nextTick(() => this.uiSynth.triggerAttackRelease('D3', '8n'));
       },
 
       glitchSound(isGlitching: boolean): void {

@@ -112,7 +112,7 @@ export class Main implements MainInterface {
     this.computeCanvasDimensions();
 
     this.textBuffer = [
-      '',
+      '%Fg%',
       `${this.content.title} - Arch Linux 5.6.11-arch1-1 (tty1)`,
       '',
       `xgallom.sk login: ${this.user}`,
@@ -247,6 +247,8 @@ export class Main implements MainInterface {
         this.promptKeyDown(event);
         break;
     }
+
+    return false;
   }
 
   loginKeyDown(event: KeyboardEvent): void {
@@ -414,6 +416,7 @@ export class Main implements MainInterface {
         break;
 
       case 'Backspace':
+        event.preventDefault();
         if (this.inputPosition > 0) {
           this[target] = this[target].slice(0, this.inputPosition - 1) + this[target].slice(this.inputPosition);
           --this.inputPosition;
