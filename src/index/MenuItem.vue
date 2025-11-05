@@ -7,10 +7,10 @@
       'text-magenta': !hasActiveMenuEntry && !isGlitching,
       'text-white': isGlitching,
       'anim-color': hasColorAnim,
-    }" @mouseenter="enter" @mouseleave="leave" @click="redirect" @mousedown="enter" @mouseup="leave">
-    <div>[{{ menuEntry }}] {{ title }}</div>
-    <div class="flex-grow"></div>
-    <div v-if="external">&lt;extern&gt;</div>
+    }" @mouseenter="enter" @mouseleave="leave" @click="redirect" @touchstart="enter" @touchend="leave">
+    <span>[{{ menuEntry }}] {{ title }}</span>
+    <span class="flex-grow"></span>
+    <span v-if="external">&lt;extern&gt;</span>
   </button>
 </template>
 
