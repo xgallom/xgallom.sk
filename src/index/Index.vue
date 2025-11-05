@@ -1,18 +1,18 @@
 <template>
-    <div class="w-screen h-screen select-none inset-0">
-        <div class="absolute w-screen h-screen inset-0">
+    <div class="w-screen h-dvh select-none inset-0">
+        <div class="absolute w-screen h-dvh inset-0">
             <div id="app"
                  ref="app"
-                 class="w-screen h-screen absolute inset-0"
+                 class="w-screen h-dvh absolute inset-0"
             >
             </div>
 
-            <div class="absolute w-screen h-screen font-vga inset-0 flex flex-col items-stretch lg:items-center anim-opacity z-20"
+            <div class="absolute w-screen h-dvh font-vga inset-0 flex flex-col items-stretch lg:items-center anim-opacity z-20"
                  :class="{'opacity-0': !hasUi}"
             >
                 <button
                   ref="header-bar"
-                  class="appearance-none focus:outline-none mt-4 md:mt-12 flex flex-col items-center p-2 pl-6 pr-6"
+                  class="appearance-none focus:outline-none mt-4 md:mt-12 flex-none flex flex-col items-center p-2 pl-6 pr-6"
                   :class="{
                     'anim-color': hasColorAnim,
                     'text-magenta': !isGlitching && !hasActiveMenuEntry,
@@ -31,7 +31,7 @@
                     </span>
                 </button>
 
-        <div class="flex flex-col w-screen flex-grow items-stretch md:items-center lg:items-start justify-start lg:justify-center pt-4 md:pt-12 lg:pt-0 lg:pb-12 lg:my-24 lg:self-start">
+                <div class="flex flex-col w-screen flex-grow items-stretch md:items-center lg:items-start justify-start lg:justify-center pt-4 md:pt-12 lg:pt-0 lg:pb-12 lg:my-24 lg:self-start">
                     <div class="flex flex-col lg:ml-24 xl:ml-48 border-0 anim-width-color box-content"
                          :class="{
                            'w-0': !hasMenu, 
@@ -100,7 +100,7 @@
                 </div>
 
                 <div ref="footer-bar"
-                     class="mb-1 flex items-center justify-center"
+                     class="mb-1 flex-none flex items-center justify-center"
                      :class="{
                        'anim-color': hasColorAnim,
                        'text-magenta': !isGlitching && !hasActiveMenuEntry,
@@ -302,7 +302,8 @@
       redirect(url: string): void {
         this.clickSound();
         this.activeMenuEntry = -1;
-        setTimeout(() => window.location = url, 330);
+        this.render.animateColor(Index3D.TimeToAnimateColor, t => t * t, 0, () => this.hasColorAnim = false);
+        setTimeout(() => window.location = url, 400);
       },
 
       setMenuEntry(menuEntry: number): void {
@@ -310,14 +311,14 @@
         this.activeMenuEntry = menuEntry;
         clearTimeout(this.fadeInHandler);
         this.fadeInHandler = null;
-        this.render.animateColor(1.5, t => t * t, 1);
+        this.render.animateColor(Index3D.TimeToAnimateColor, t => t * t, 1);
       },
 
       unsetMenuEntry(): void {
         if (this.hasUi)
           this.fadeInHandler = setTimeout(() => {
             this.activeMenuEntry = -1;
-            this.render.animateColor(1.5, t => t * t, 0, () => this.hasColorAnim = false);
+            this.render.animateColor(Index3D.TimeToAnimateColor, t => t * t, 0, () => this.hasColorAnim = false);
           }, 50);
       },
 
@@ -327,17 +328,6 @@
           this.updateViewport();
           this.render.resize(this.$refs.app, this.activeScreen);
         });
-      },
-
-      onPopState(): void {
-        console.log('back');
-        this.loaded = true;
-        this.running = true;
-        this.hasUi = true;
-        this.hasMenu = true;
-        this.render.fade(1.5, Index3D.Ease);
-        this.render.rotateIn(Index3D.RotationSpeed, 0.33);
-        this.render.startRunning(this.activeScreen);
       },
 
       updateViewport(): void {
