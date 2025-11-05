@@ -346,7 +346,7 @@ module.exports = {
       disc: 'disc',
       decimal: 'decimal',
     },
-    margin: (theme, {negative}) => ({
+    margin: (theme, { negative }) => ({
       auto: 'auto',
       ...theme('spacing'),
       ...negative(theme('spacing')),
@@ -425,6 +425,7 @@ module.exports = {
       ...percentage,
       full: '100%',
       screen: '100vw',
+      menu: '24rem',
     }),
     zIndex: {
       auto: 'auto',

@@ -1,21 +1,22 @@
 import * as Three from 'three';
-import {EffectComposer} from 'three/examples/jsm/postprocessing/EffectComposer';
-import {GlitchPass} from 'three/examples/jsm/postprocessing/GlitchPass';
-import {RenderPass} from 'three/examples/jsm/postprocessing/RenderPass';
-import {UnrealBloomPass} from 'three/examples/jsm/postprocessing/UnrealBloomPass';
-import {ShaderPass} from 'three/examples/jsm/postprocessing/ShaderPass.js';
-import {RGBShiftShader} from 'three/examples/jsm/shaders/RGBShiftShader.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import { RGBShiftShader } from 'three/examples/jsm/shaders/RGBShiftShader.js';
 
-import {AnimationComposer} from './AnimationComposer';
-import {Ease} from './Interpolation';
-import type {Interpolation} from './Interpolation';
-import type {InterpolationAnimationCallback} from './InterpolationAnimation';
-import {createInterpolationAnimation} from './InterpolationAnimation';
-import {XosLogo} from './XosLogo';
+import { AnimationComposer } from './AnimationComposer';
+import { Ease } from './Interpolation';
+import type { Interpolation } from './Interpolation';
+import type { InterpolationAnimationCallback } from './InterpolationAnimation';
+import { createInterpolationAnimation } from './InterpolationAnimation';
+import { XosLogo } from './XosLogo';
 
 type Translation = { x: number, y: number, z: number };
 
 export const TimeToFadeIn = 4;
+export const TimeToAnimateColor = 0.33;
 export const TimeToFadeOut = 2.5;
 export const Exposure = 1;
 export const TimeToRotateIn = 2.5;
@@ -25,12 +26,14 @@ export const TimeToLoad = 1;
 
 export const TimeToTranslate = 2;
 export const TranslationPosition = {
-  x: 24,
-  y: 8,
-  z: 0,
+  [0]: { x: 0, y: 16, z: -240 },
+  [1]: { x: 0, y: 16, z: -200 },
+  [2]: { x: 0, y: 16, z: -200 },
+  [3]: { x: 24, y: 8, z: -200 },
+  [4]: { x: 24, y: 8, z: -200 },
 };
 
-export {Ease, InvertEase} from './Interpolation';
+export { Ease, InvertEase } from './Interpolation';
 
 const MaterialColor = {
   [0]: 0xff57ff,
@@ -55,20 +58,21 @@ export class Index {
   logo: Three.Group;
 
   _fade: ?number = null;
+  _colorAnimation: ?number = null;
   _rotateIn: ?number = null;
   _translate: ?number = null;
   _rotation: number;
 
 
-  constructor(container: Element) {
+  constructor(container: Element, screen: number) {
     this._createRenderer(container);
 
     this.scene = new Three.Scene();
 
-    this._createCamera(container);
+    this._createCamera(container, screen);
     this._createComposer(container);
 
-    this.material = new Three.LineBasicMaterial({color: MaterialColor[0]});
+    this.material = new Three.LineBasicMaterial({ color: MaterialColor[0] });
     this.logo = XosLogo(this.material);
     this.scene.add(this.logo);
 
@@ -79,24 +83,33 @@ export class Index {
       context.rotation += rotationDelta;
 
       this.logo.rotateY(rotationDelta);
-      this.rgbShiftPass.uniforms['amount'].value = 0.00125 * Math.abs(Math.sin(context.rotation));
-    }, {rotationSpeed: 0, rotation: 0});
+      // this.rgbShiftPass.uniforms['amount'].value = 0.00125 * Math.abs(Math.sin(context.rotation));
+    }, { rotationSpeed: 0, rotation: 0 });
 
+    this.rgbShiftPass.uniforms['amount'].value = 0.00125;
     this.animationComposer.singleStep();
   }
 
-  run(callback: ?InterpolationAnimationCallback = null): void {
+  startRunning(screen?: number): void {
+    if (screen !== undefined) {
+      const position = TranslationPosition[screen];
+      this.camera.position.setX(position.x);
+      this.camera.position.setY(position.y);
+    }
+    this.animationComposer.restartClock();
+    this.animationComposer.animate();
+  }
+
+  run(screen: number, callback: ?InterpolationAnimationCallback = null): void {
     setTimeout(() => {
       this.rotateIn();
       this.fade(TimeToFadeIn, Ease, () => {
-        this.translate();
+        this.translate(TranslationPosition[screen]);
 
         if (callback)
           callback();
       });
-
-      this.animationComposer.restartClock();
-      this.animationComposer.animate();
+      this.startRunning();
     }, TimeToLoad * 1000);
   }
 
@@ -107,11 +120,10 @@ export class Index {
 
   glitch(isGlitching: boolean): void {
     this.glitchPass.enabled = isGlitching;
-
     this.glitchBloomPass(isGlitching);
   }
 
-  glitchColor(isGlitching: boolean|number): void {
+  glitchColor(isGlitching: boolean | number): void {
     this.material.color.set(MaterialColor[isGlitching]);
   }
 
@@ -122,20 +134,45 @@ export class Index {
   fade(
     timeToFadeIn: number = TimeToFadeIn,
     interpolation: Interpolation = Ease,
-    callback: ?InterpolationAnimationCallback = null
+    callback: ?InterpolationAnimationCallback = null,
   ): void {
     this._fade = createInterpolationAnimation(
       timeToFadeIn,
       interpolation,
-      (interpolatedValue, context) =>
-        this.renderer.toneMappingExposure = Exposure * interpolatedValue,
+      (interpolatedValue, context) => {
+        this.renderer.toneMappingExposure = Exposure * interpolatedValue;
+      },
       () => {
         this._fade = null;
         if (callback) callback();
       },
       {},
       this._fade,
-      this.animationComposer
+      this.animationComposer,
+    );
+  }
+
+  animateColor(
+    timeToAnimate: number = TimeToAnimateColor,
+    interpolation: Interpolation = Ease,
+    target: boolean | number,
+    callback: ?InterpolationAnimationCallback = null,
+  ): void {
+    const fromColor = this.material.color.clone();
+    const toColor = new Three.Color(MaterialColor[target]);
+    this._colorAnimation = createInterpolationAnimation(
+      timeToAnimate,
+      interpolation,
+      (interpolatedValue, context) => {
+        this.material.color.set(fromColor.lerp(toColor, interpolatedValue));
+      },
+      () => {
+        this._colorAnimation = null;
+        if (callback) callback();
+      },
+      {},
+      this._colorAnimation,
+      this.animationComposer,
     );
   }
 
@@ -148,20 +185,21 @@ export class Index {
     this._rotateIn = createInterpolationAnimation(
       timeToRotateIn,
       interpolation,
-      (interpolatedValue, context) =>
-        this.animationComposer.context(this._rotation).rotationSpeed = context.rotationSpeed * interpolatedValue,
+      (interpolatedValue, context) => {
+        this.animationComposer.context(this._rotation).rotationSpeed = context.rotationSpeed * interpolatedValue;
+      },
       () => {
         this._rotateIn = null;
         if (callback) callback();
       },
-      {rotationSpeed: rotationSpeed},
+      { rotationSpeed: rotationSpeed },
       this._rotateIn,
-      this.animationComposer
+      this.animationComposer,
     );
   }
 
   translate(
-    translation: Translation = TranslationPosition,
+    translation: Translation,
     timeToTranslate: number = TimeToTranslate,
     interpolation: Interpolation = Ease,
     callback: ?InterpolationAnimationCallback = null
@@ -170,52 +208,47 @@ export class Index {
       timeToTranslate,
       interpolation,
       (interpolatedValue, context) => {
-        this.camera.position.set(
-          context.translation.x * interpolatedValue,
-          context.translation.y * interpolatedValue,
-          -200 + context.translation.z * interpolatedValue
-        )
+        this.camera.position.setX(context.translation.x * interpolatedValue);
+        this.camera.position.setY(context.translation.y * interpolatedValue);
       },
       () => {
         this._translate = null;
         if (callback) callback();
       },
-      {translation: translation},
+      { translation: translation },
       this._translate,
-      this.animationComposer
+      this.animationComposer,
     );
   }
 
-  resize(container: Element): void {
+  resize(container: Element, screen: number): void {
     this.camera.aspect = container.clientWidth / container.clientHeight;
     this.camera.updateProjectionMatrix();
-
     this.renderer.setSize(container.clientWidth, container.clientHeight);
     this.composer.setSize(container.clientWidth, container.clientHeight);
     this.bloomPass.resolution = new Three.Vector2(container.clientWidth, container.clientHeight);
+    const position = TranslationPosition[screen];
+    this.camera.position.set(position.x, position.y, position.z);
   }
 
   _createRenderer(container) {
-    this.renderer = new Three.WebGLRenderer({antialias: true});
-
+    this.renderer = new Three.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(container.clientWidth, container.clientHeight);
-
     this.renderer.toneMapping = Three.Uncharted2ToneMapping;
     this.renderer.toneMappingExposure = 0;
 
     container.appendChild(this.renderer.domElement);
   }
 
-  _createCamera(container) {
+  _createCamera(container, screen: number) {
     this.camera = new Three.PerspectiveCamera(
       40,
       container.clientWidth / container.clientHeight,
       1,
-      250
+      350,
     );
-
-    this.camera.position.set(0, 0, -200);
+    this.camera.position.setZ(TranslationPosition[screen].z);
     this.camera.lookAt(0, 0, 0);
 
     this.scene.add(this.camera);
@@ -228,7 +261,7 @@ export class Index {
       new Three.Vector2(container.clientWidth, container.clientHeight),
       BloomPassStrength[false],
       0,
-      0
+      0,
     );
 
     this.rgbShiftPass = new ShaderPass(RGBShiftShader);

@@ -26,17 +26,11 @@
 }
 
 .anim-color {
-    transition: /*background-color 1.5s ease, */color 0.33s ease-in/*, border-color 1.5s ease*/;
+    transition: background-color 0.33s ease-in, color 0.33s ease-in;
 }
 
 .anim-color-opacity-fast {
-    transition:/* background-color 0.33s ease, color 0.33s ease, border-color 0.33s ease,*/ opacity 0.33s ease;
-}
-
-.anim-width-color {
-    display: inline-block;
-    overflow: hidden;
-    transition: /*background-color 0.33s ease, color 0.33s ease, border-color 0.33s ease,*/ width 1.5s ease;
+    transition: opacity 0.33s ease;
 }
 
 .button {
@@ -68,8 +62,3 @@
 .fade-enter, .fade-leave-to {
     opacity: 0;
 }
-
-.w-menu {
-    width: 24rem;
-}
-
