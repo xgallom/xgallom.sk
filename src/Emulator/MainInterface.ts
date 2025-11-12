@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { EmulatorContext } from './Context';
 import type { EmulatorUpdateCallback } from './UpdateCallback';
 

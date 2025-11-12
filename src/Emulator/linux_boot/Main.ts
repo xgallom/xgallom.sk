@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { canvasClear } from '../Context';
 import type { EmulatorContext } from '../Context';
 import type { Dimensions } from '../Dimensions';

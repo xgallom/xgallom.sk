@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 @theme {
-	--color-magenta: #ff57ff;
-	--default-font-family: 'VGA';
+    --color-magenta: #ff57ff;
+    --default-font-family: 'VGA';
+    --breakpoint-3xl: 160rem;
+    --container-3xl: 160rem;
 }
 
 .button {

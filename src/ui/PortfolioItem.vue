@@ -1,6 +1,6 @@
 <template>
   <button type="button"
-    class="appearance-none focus:outline-none w-screen md:w-[24rem] cursor-pointer flex flex-col items-stretch border anim-color box-border"
+    class="appearance-none focus:outline-none w-screen md:w-[24rem] 3xl:w-[40rem] cursor-pointer flex flex-col items-stretch border anim-color box-border"
     :class="{
       'border-white bg-black text-white': isActive,
       'border-black bg-black text-white': (!isActive && hasActiveMenuEntry) || (isHighlighted && !hasActiveMenuEntry),
@@ -19,7 +19,8 @@
       <span class="flex flex-col items-stretch h-80 overflow-y-auto">
         <img :src="img" :class="`flex w-full h-44 ${imgClass}`" />
         <span class="inline-block grow text-left p-2 px-4" v-html="text"></span>
-        <a :href="url" class="flex flex-col text-left p-2 px-4 text-magenta hover:text-white" target="_blank">
+        <a :href="url" target="_blank" class="flex flex-col text-left p-2 px-4 text-magenta hover:text-white"
+          @click.stop="() => { }">
           Website
         </a>
       </span>

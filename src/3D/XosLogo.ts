@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Scene } from 'three';
 import * as Three from 'three';
 

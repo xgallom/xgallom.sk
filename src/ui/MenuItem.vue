@@ -1,6 +1,6 @@
 <template>
   <button type="button"
-    class="appearance-none focus:outline-none w-screen md:w-[24rem] p-2 px-4 cursor-pointer flex flex-row flex-no-wrap"
+    class="appearance-none focus:outline-none w-screen md:w-[24rem] 3xl:w-[40rem] p-2 px-4 cursor-pointer flex flex-row flex-no-wrap"
     :class="{
       'text-black bg-white': isActive,
       'text-white bg-black': !isActive && hasActiveMenuEntry,
@@ -10,7 +10,7 @@
     }" @mouseenter="enter" @mouseleave="leave" @click="redirect" @touchstart="enter" @touchend="leave">
     <span>[{{ menuEntry }}] {{ title }}</span>
     <span class="grow"></span>
-    <span v-if="isExternal">&lt;extern&gt;</span>
+    <span v-if="suffix">{{ suffix }}</span>
   </button>
 </template>
 
@@ -24,7 +24,8 @@ export default {
     activeMenuEntry: Number,
     url: String,
     title: String,
-    isExternal: Boolean
+    suffix: String | undefined,
+    target: String | undefined,
   },
   computed: {
     hasActiveMenuEntry(): boolean {

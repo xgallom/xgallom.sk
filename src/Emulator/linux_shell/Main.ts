@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { canvasClear } from '../Context';
 import type { EmulatorContext } from '../Context';
 import type { Dimensions } from '../Dimensions';
@@ -74,7 +73,6 @@ export class Main implements MainInterface {
   constructor(context: EmulatorContext, content: Object) {
     this.context = context;
     this.content = content;
-
     this.event.keydown = event => this.keyDown(event);
   }
 
@@ -109,25 +107,30 @@ export class Main implements MainInterface {
     this.commandBuffer = [];
     this.commandBufferPosition = 0;
     this.inputPosition = 0;
-
     this.computeCanvasDimensions();
 
-    this.textBuffer = [
-      '%Fg%',
-      `${this.content.title} - Arch Linux 5.6.11-arch1-1 (tty1)`,
-      '',
-      `xgallom.sk login: ${this.user}`,
-      '',
-      '* no registration required, thanks Linus! *'
-    ];
+    console.log(this.content);
+    if (this.content.user) {
+      this.user = this.content.user;
+      this.cursor = { x: 0, y: 0 };
+      this.runLogin();
+    } else {
+      this.textBuffer = [
+        '%Fg%',
+        `${this.content.title} - Arch Linux 5.6.11-arch1-1 (tty1)`,
+        '',
+        `xgallom.sk login: ${this.user}`,
+        '',
+        '* no registration required, thanks Linus! *'
+      ];
 
-    this.cursor = {
-      x: 18 + this.inputPosition,
-      y: 3
-    };
+      this.cursor = {
+        x: 18 + this.inputPosition,
+        y: 3
+      };
+    }
 
     this.reinitialize();
-
     this.render();
   }
 
@@ -141,7 +144,6 @@ export class Main implements MainInterface {
       this.directory = `/home/${this.user}`;
 
     this.status = Status.Prompt;
-
     this.executeCommand('motd');
   }
 
@@ -257,7 +259,7 @@ export class Main implements MainInterface {
       event,
       'user',
       isAlnum,
-      () => this.runLogin()
+      () => this.runLogin(),
     )) {
       this.textBuffer[3] = `xgallom.sk login: ${this.user}`;
       this.cursor = {

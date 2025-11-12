@@ -1,127 +1,85 @@
 <template>
-  <div class="w-screen h-dvh select-none inset-0">
-    <div class="absolute w-screen h-dvh font-vga inset-0 flex flex-col items-stretch lg:items-center bg-black">
-      <button ref="header-bar"
-        class="appearance-none cursor-pointer focus:outline-none mt-4 md:mt-12 flex-none flex flex-col items-center p-2 pl-6 pr-6"
-        :class="{
-          'anim-color': hasColorAnim,
-          'text-magenta': !isGlitching && !hasActiveMenuEntry,
-          'text-white': isGlitching || hasActiveMenuEntry,
-        }" @mousedown="startGlitch(0)" @touchstart="startGlitch(0)" @mouseup="stopGlitch" @touchend="stopGlitch">
-        <span class="text-xl">
-          Milan Gallo
-        </span>
-        <span>
-          Portfolio
-        </span>
-      </button>
+  <div class="w-screen h-dvh select-none inset-0 flex flex-col items-center">
+    <div
+      class="absolute w-screen h-dvh font-vga text-base 3xl:text-3xl inset-0 flex flex-col items-stretch xl:items-center justify-center bg-black">
+      <div class="flex flex-col w-full 3xl:container h-full items-stretch lg:items-center">
+        <button ref="header-bar"
+          class="appearance-none cursor-pointer focus:outline-none mt-4 md:mt-12 flex-none flex flex-col items-center p-2 pl-6 pr-6"
+          :class="{
+            'anim-color': hasColorAnim,
+            'text-magenta': !hasActiveMenuEntry,
+            'text-white': hasActiveMenuEntry,
+          }" @mousedown="startGlitch(0)" @touchstart="startGlitch(0)" @mouseup="stopGlitch" @touchend="stopGlitch"
+          @click="redirect('/')">
+          <span class="text-xl 3xl:text-6xl">
+            Milan Gallo
+          </span>
+          <span>
+            Portfolio
+          </span>
+        </button>
 
-      <div
-        class="flex flex-col lg:flex-row w-screen flex-grow items-stretch md:items-center lg:items-center justify-start lg:justify-start pt-4 md:pt-12 lg:pt-0 lg:pb-12 lg:my-24 lg:self-start">
-        <div class="flex flex-col lg:ml-24 xl:ml-48 border-0 anim-width-color box-border w-screen md:w-[24rem]">
-          <div class="flex flex-col">
+        <div
+          class="flex flex-col lg:flex-row w-full grow items-stretch md:items-center lg:items-center justify-start lg:justify-start pt-4 md:pt-12 lg:pt-0 lg:pb-12 lg:my-24 3xl:my-0 lg:self-start">
+          <div
+            class="flex flex-col lg:ml-24 xl:ml-48 3xl:ml-12 border-0 anim-width-color box-border w-screen md:w-[24rem] 3xl:w-4xl">
+            <div class="flex flex-col">
+              <template v-for="(link, n) in links">
+                <PortfolioLink v-if="link.type === 'link' && maxScreen[link.maxScreen]" :menuEntry="n"
+                  :activeMenuEntry="activeMenuEntry" :url="link.url" :title="link.title" @redirect="redirect"
+                  @setMenuEntry="setMenuEntry" @unsetMenuEntry="unsetMenuEntry" />
+                <PortfolioItem v-if="link.type === 'portfolio'" :displayContent="!ifScreen.md" :menuEntry="n"
+                  :activeMenuEntry="activeMenuEntry" :url="link.url" :title="link.title" :img="link.img"
+                  :text="link.text" :imgClass="link.imgMobile" @redirect="redirect" @setMenuEntry="setMenuEntry"
+                  @unsetMenuEntry="unsetMenuEntry" />
+              </template>
+            </div>
+          </div>
+          <div
+            class="hidden relative md:flex md:w-full lg:mr-12 xl:mr-24 lg:pl-12 md:pt-20 md:pb-12 lg:py-0 grow flex flex-col items-center text-white">
+            <div class="opacity-0 flex flex-col">
+              <div class="p-2">?</div>
+              <div class="h-144 3xl:h-240"></div>
+            </div>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span class="text-magenta anim-opacity-fast" :class="{
+                'opacity-100': activeMenuEntry === -1,
+                'opacity-0 pointer-events-none': activeMenuEntry !== -1,
+              }">
+                Select an item from the portfolio.
+              </span>
+            </div>
+
             <template v-for="(link, n) in links">
-              <PortfolioLink v-if="link.type === 'link'" :menuEntry="n" :activeMenuEntry="activeMenuEntry"
-                :url="link.url" :title="link.title" @redirect="redirect" @setMenuEntry="setMenuEntry"
-                @unsetMenuEntry="unsetMenuEntry" />
-              <PortfolioItem v-if="link.type === 'portfolio'" :displayContent="!ifScreen.md" :menuEntry="n"
-                :activeMenuEntry="activeMenuEntry" :url="link.url" :title="link.title" :img="link.img" :text="link.text"
-                :imgClass="link.imgMobile" @redirect="redirect" @setMenuEntry="setMenuEntry"
-                @unsetMenuEntry="unsetMenuEntry" />
+              <PortfolioContent v-if="link.type === 'portfolio'" :menuEntry="n" :activeMenuEntry="activeMenuEntry"
+                :url="link.url" :title="link.title" :img="link.img" :text="link.text" :imgClass="link.imgDesktop" />
             </template>
           </div>
         </div>
-        <div
-          class="hidden md:flex lg:mr-12 xl:mr-24 lg:pl-12 md:pt-24 md:pb-12 lg:py-0 grow flex flex-col items-center text-white">
-          <div class="opacity-0 flex flex-col">
-            <div class="p-2">?</div>
-            <div class="h-144"></div>
-          </div>
-          <template v-for="(link, n) in links">
-            <PortfolioContent v-if="link.type === 'portfolio'" :menuEntry="n" :activeMenuEntry="activeMenuEntry"
-              :url="link.url" :title="link.title" :img="link.img" :text="link.text" :imgClass="link.imgDesktop" />
-          </template>
-        </div>
-      </div>
 
-      <div ref="footer-bar" class="mb-2 flex-none flex items-center justify-center" :class="{
-        'anim-color': hasColorAnim,
-        'text-magenta': !isGlitching && !hasActiveMenuEntry,
-        'text-white': isGlitching || hasActiveMenuEntry,
-      }">
-        Copyright © Milan Gallo, 2025
+        <div class="flex-none flex items-center justify-center">
+          <a href="https://github.com/xgallom/xgallom.sk" target="_blank" class="p-2 lg:underline hover:no-underline"
+            :class="{
+              'anim-color': hasColorAnim,
+              'text-magenta': !hasActiveMenuEntry,
+              'text-white': hasActiveMenuEntry,
+            }">
+            Copyright © Milan Gallo, 2025
+          </a>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-// @ts-nocheck
 import { markRaw } from 'vue';
 import PortfolioContent from '/src/ui/PortfolioContent.vue';
 import PortfolioItem from '/src/ui/PortfolioItem.vue';
 import PortfolioLink from '/src/ui/PortfolioLink.vue';
+import { Links } from './Content.ts';
 
 let Tone;
-
-const Links = [
-  { type: 'link', url: '/', title: 'Homepage' },
-  {
-    type: 'portfolio',
-    url: 'https://gemsandgoblins.com/',
-    title: 'Gems and Goblins',
-    img: '/img/gems-and-goblins-alt.avif',
-    imgDesktop: 'object-contain',
-    imgMobile: 'object-contain',
-    text: `Gems and Goblins is a turn based mobile RPG set in a fantasy world with extensive lore. It's built in Unreal 
-    Engine and has a Symfony backend.<br>
-    <br>
-    My role in the team was backend development, game testing and building websites. As a small team we worked very
-    closely and spent a lot of time brainstorming and building game mechanics.<br>
-    <br>
-    Although my role was server oriented, I did have insight into the client and kept up with the unreal codebase, 
-    helping out on the side.`,
-  },
-  {
-    type: 'portfolio',
-    url: 'https://wemakegames.sk/',
-    title: 'WeMakeGames',
-    img: '/img/we-make-games.png',
-    imgDesktop: 'object-cover',
-    imgMobile: 'object-cover',
-    text: `WeMakeGames is a small game studio (~15 people) where I worked as a developer. I joined development during
-    Gems and Goblins and participated on few additional yet unreleased titles.<br>
-    <br>
-    Alongside developing I helped directing, copy writing, preparing documents, communicating with shareholders and
-    public. It was a very fast and inspiring environment, where everyone showed up with their absolute best.`,
-  },
-  {
-    type: 'portfolio',
-    url: 'https://superhivemarket.com/products/gamepad-camera-control',
-    title: 'Gamepad Camera Control',
-    img: '/img/gamepad-camera-control.png',
-    imgDesktop: 'object-cover',
-    imgMobile: 'object-cover',
-    text: `Gamepad Camera Control is a separately sold Blender plugin. It provides gamepad support and allows
-    controling cameras in the scene. It records keyframes and streamlines creation of captivating trailers.<br>
-    <br>
-    I started out as an advisor and helped by integrating SDL. Pretty early I overtook as a lead developer, and after a complete 
-    refactor we continued implementing fixes and additional features. Codebase is in python and utilises the Blender plugin API.`,
-  },
-  {
-    type: 'portfolio',
-    url: 'https://github.com/xgallom/zengine',
-    title: 'Zengine',
-    img: '/img/zengine.png',
-    imgDesktop: 'object-contain',
-    imgMobile: 'object-cover',
-    text: `Zengine is my one-person 3D game engine built in Zig on top of SDL. The project is slowly crawling its way 
-    out of infancy.<br>
-    <br>
-    Most work done is still preliminary, but it has a working math library with batching, gpu passes, shaders, 
-    materials, lighting, texturing, scene graph and extensive performance monitoring`,
-  },
-];
 
 export default {
   name: 'Index',
@@ -152,13 +110,14 @@ export default {
   },
 
   data() {
+    const activeMenuEntry = window.localStorage.getItem('xgallom-sk-portfolio-active-menu-entry');
     return {
       loading: 3,
       loaded: true,
       running: false,
 
       hasColorAnim: false,
-      activeMenuEntry: -1,
+      activeMenuEntry: activeMenuEntry ? Number(activeMenuEntry) : -1,
       windowWidth: window.innerWidth,
       tone: markRaw({
         uiSynth: null,
@@ -186,28 +145,41 @@ export default {
       if (screen.sm) return 1;
       return 0;
     },
+    maxScreen() {
+      return {
+        sm: this.activeScreen < 1,
+        md: this.activeScreen < 2,
+        lg: this.activeScreen < 3,
+        xl: this.activeScreen < 4,
+      };
+    },
     links() {
       return Links;
     },
   },
 
-  watch: {},
+  watch: {
+    activeMenuEntry() {
+      window.localStorage.setItem('xgallom-sk-portfolio-active-menu-entry', `${this.activeMenuEntry}`);
+    },
+  },
 
   methods: {
-    redirect(url: string): void {
-      this.clickSound();
-      this.activeMenuEntry = -1;
-      setTimeout(() => window.location = url, 400);
+    redirect(url: string, target: string | undefined): void {
+      // if (!this.ifScreen.md)
+      //   this.activeMenuEntry = -1;
+      if (target)
+        window.open(url, target);
+      else
+        window.location = url;
     },
 
     setMenuEntry(menuEntry: number): void {
       this.activeMenuEntry = menuEntry;
-      this.clickSound();
     },
 
     unsetMenuEntry(): void {
       this.activeMenuEntry = -1;
-      this.clickSound();
     },
 
     onKeyDown(e): void {
@@ -229,6 +201,11 @@ export default {
               break;
           }
         }
+      }
+
+      if (this.activeMenuEntry !== -1 && e.key === 'Enter') {
+        const link = this.links[this.activeMenuEntry];
+        this.redirect(link.url, '_blank');
       }
     },
 
@@ -259,9 +236,9 @@ export default {
 
     clickSound(): void {
       if (!this.tone.uiSynth) {
-        this.startSound(() => this.$nextTick(() => this.tone.uiSynth.triggerAttackRelease('D3', '8n')));
+        this.startSound(() => this.$nextTick(() => this.tone.uiSynth.triggerAttackRelease('D3', '16n')));
       } else {
-        this.$nextTick(() => this.tone.uiSynth.triggerAttackRelease('D3', '8n'));
+        this.$nextTick(() => this.tone.uiSynth.triggerAttackRelease('D3', '16n'));
       }
     },
   },

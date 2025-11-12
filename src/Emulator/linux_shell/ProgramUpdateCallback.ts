@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const ProgramCommandType = {
   Return: 'return',
   Exit: 'exit',

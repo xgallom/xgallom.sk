@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { AnimationComposer } from './AnimationComposer';
 
 export type InterpolationAnimationResultHandler = (number, Object) => void;

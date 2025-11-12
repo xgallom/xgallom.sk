@@ -1,4 +1,3 @@
-// @ts-nocheck
 export type BootMessage = {
   duration: number,
   message: string,

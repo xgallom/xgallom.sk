@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { Dimensions } from './Dimensions';
 import { Font } from './Font';
 

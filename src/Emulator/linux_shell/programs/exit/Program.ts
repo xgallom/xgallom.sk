@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Main } from '../../Main';
 import type { ProgramInterface } from '../../ProgramInterface';
 import { ProgramCommandType } from '../../ProgramUpdateCallback';

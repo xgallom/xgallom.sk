@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { canvasClear } from './Context';
 import type { EmulatorContext } from './Context';
 import type { EmulatorInterface } from './EmulatorInterface';
@@ -47,11 +46,8 @@ export class Emulator implements EmulatorInterface {
     if (!Main.hasOwnProperty(content.type))
       this.load(content.type, () => this.run(content));
     else {
-      if (this.content)
-        this.content.deinitialize();
-
+      if (this.content) this.content.deinitialize();
       this.content = new Main[content.type](this.context, content);
-
       this.content.run(command => this.update(command));
     }
   }
@@ -59,7 +55,6 @@ export class Emulator implements EmulatorInterface {
   load(contentType: string, callback?: () => void): void {
     import(`./${contentType}/Main.ts`).then((imported: { Main: Class<MainInterface> }): void => {
       Main[contentType] = imported.Main;
-
       if (callback)
         callback();
     });
@@ -70,7 +65,6 @@ export class Emulator implements EmulatorInterface {
       case EmulatorCommandType.Run:
         this.run(command.data);
         break;
-
       default:
         console.warn('Unhandled command: ', command);
         break;

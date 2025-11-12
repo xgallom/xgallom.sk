@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as Three from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 

@@ -1,6 +1,6 @@
 <template>
   <button type="button"
-    class="appearance-none focus:outline-none w-screen md:w-[24rem] cursor-pointer flex flex-col items-stretch anim-color"
+    class="appearance-none focus:outline-none w-screen md:w-[24rem] 3xl:w-[40rem] cursor-pointer flex flex-col items-stretch anim-color"
     :class="{
       'bg-black text-white': hasActiveMenuEntry || isHighlighted,
       'bg-black text-magenta': !hasActiveMenuEntry && !isHighlighted,

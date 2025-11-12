@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { canvasClear } from '../../../Context';
 import type { Dimensions } from '../../../Dimensions';
 import type { EmulatorEventHandler } from '../../../EventHandler';
@@ -151,8 +150,10 @@ export class Program implements ProgramInterface {
   }
 
   keyDown(event: KeyboardEvent): void {
+    console.log(event.key);
     switch (event.key) {
       case 'ArrowDown':
+      case 'j':
         this.contentBufferPosition = Math.max(
           Math.min(this.contentBufferPosition + 1, this.contentBuffer.length - this.contentDimensions.height),
           0
@@ -160,6 +161,7 @@ export class Program implements ProgramInterface {
         break;
 
       case 'ArrowUp':
+      case 'k':
         this.contentBufferPosition = Math.max(this.contentBufferPosition - 1, 0);
         break;
 
@@ -178,10 +180,12 @@ export class Program implements ProgramInterface {
         break;
 
       case 'Home':
+      case 'g':
         this.contentBufferPosition = 0;
         break;
 
       case 'End':
+      case 'G':
         this.contentBufferPosition = Math.max(
           this.contentBuffer.length - this.contentDimensions.height,
           0

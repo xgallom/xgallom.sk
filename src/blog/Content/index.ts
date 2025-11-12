@@ -4,7 +4,20 @@ export const Content = {
   type: 'grub',
   title: 'GRUB  version 2.04',
   entries: [
-    Blog,
+    {
+      ...Blog,
+      system: {
+        ...Blog.system,
+        user: 'root',
+      },
+      skipBoot: true,
+      title: 'Blog (skip boot, root)',
+    },
+    {
+      ...Blog,
+      skipBoot: true,
+      title: 'Blog (skip boot)',
+    },
     {
       ...Blog,
       bootSpeed: 10.0,
@@ -12,8 +25,8 @@ export const Content = {
     },
     {
       ...Blog,
-      skipBoot: true,
-      title: 'Blog (disable boot)',
+      bootSpeed: 1.0,
+      title: 'Blog (real boot)',
     },
   ]
 };

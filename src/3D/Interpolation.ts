@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as Three from 'three';
 
 export type Interpolation = (number) => number;

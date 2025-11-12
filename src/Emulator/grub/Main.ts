@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { canvasClear } from '../Context';
 import type { EmulatorContext } from '../Context';
 import type { Dimensions } from '../Dimensions';
@@ -99,7 +98,6 @@ export class Main implements MainInterface {
     this.context.canvasContext.fillStyle = Font.ColorName.Bg;
     this.drawBackground(GrubMenuOffset.x, GrubMenuOffset.y, GrubMenuEnd.x, GrubMenuEnd.y);
     this.context.canvasContext.fillStyle = Font.ColorName.Fg;
-
     this.selection.forEach((entry, index) => {
       const y = GrubMenuOffset.y + index;
       let title = ' ' + entry.title;
@@ -111,7 +109,6 @@ export class Main implements MainInterface {
       }
 
       this.drawCharacters(title, GrubMenuOffset.x, y);
-
       this.context.canvasContext.fillStyle = Font.ColorName.Fg;
     });
   }
@@ -120,9 +117,7 @@ export class Main implements MainInterface {
     canvasClear(this.context.canvasContext);
 
     this.context.canvasContext.fillStyle = Font.ColorName.Gray;
-
     this.centerCharacters(this.content.title, GrubDimensions.width / 2, 1);
-
     this.drawCharacters('Use the ↑ and ↓ keys to select which entry is highlighted.',
       6, GrubDimensions.height - 6
     );
@@ -160,7 +155,6 @@ export class Main implements MainInterface {
 
   centerCharacters(text: string, column: number, row: number): void {
     const leftColumn = (column - Math.round(text.length / 2)) | 0;
-
     this.drawCharacters(text, leftColumn, row);
   }
 
@@ -179,11 +173,8 @@ export class Main implements MainInterface {
     };
 
     this.drawCharacters('┌' + '─'.repeat(dimensions.width - 2) + '┐', x, y);
-
     const loopEnd = yEnd - 1;
-    while (++y < loopEnd)
-      this.drawCharacters('│' + ' '.repeat(dimensions.width - 2) + '│', x, y);
-
+    while (++y < loopEnd) this.drawCharacters('│' + ' '.repeat(dimensions.width - 2) + '│', x, y);
     this.drawCharacters('└' + '─'.repeat(dimensions.width - 2) + '┘', x, y);
   }
 

@@ -14,13 +14,11 @@ export default {
   name: "Blog",
   mounted(): void {
     this.emulator = null;
-
     new FontFace('VGA', 'url(/fonts/PxPlus_IBM_VGA9.ttf')
       .load()
       .then(() => {
         import('../Emulator/Emulator.ts').then(imported => {
           Emulator = imported.Emulator;
-
           this.run();
         })
       });

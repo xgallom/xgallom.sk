@@ -19,12 +19,10 @@ export const Blog = {
       'I know it\'s a bit bare here, but bear with me, more content is on the way! <3',
       '',
       '2020-05-26: Added mouse wheel support for %BrightBlue%man%White%. You can now scroll through the contents of the page.',
-      '2020-05-26: Second xos blog page! read it with %BrightBlue%man %BrightRed%2 xos%White%.',
-      '2020-06-09: Third xos blog page! read it with %BrightBlue%man %BrightRed%3 xos%White%.',
+      '2020-05-26: Second xos blog page! read it with %BrightBlue%man %BrightRed% xos%White%.%BrightRed%2%White%.',
+      '2020-06-09: Third xos blog page! read it with %BrightBlue%man %BrightRed% xos%White%.%BrightRed%3%White%.',
       '2020-06-11: Third xos blog contest deadline change! From %BrightRed%16.6.2020 18:00%@% to %BrightRed%30.6.2020 23:59:59%@%.',
-      '2020-09-26: Fourth xos blog page! read it with %BrightBlue%man %BrightRed%4 xos%White%. Also found out the mouse wheel is buggy and was only tested on chrome.',
-      '',
-      '- xoxo Milan %Fg%',
+      '2020-09-26: Fourth xos blog page! read it with %BrightBlue%man %BrightRed%xos%White%.%BrightRed%4%White%. Also found out the mouse wheel is buggy and was only tested on chrome.%Fg%',
     ],
     help: [
       '%White%This blog page is specifically made to resemble my home system, powered by the omnipotent Arch™ Linux® distribution.',
@@ -41,7 +39,7 @@ export const Blog = {
       'To read a blog, you can use the linux manual pager. Its name is %BrightBlue%man%White%.',
       'To invoke it, use it with the name of the page you want to view, for example %BrightBlue%man %BrightRed%xos%White%.',
       '',
-      'To read a specific blog page, use %BrightBlue%man %BrightRed%N xos%White%, where %BrightRed%N%White% is the page number.%Fg%',
+      'To read a specific blog page, use %BrightBlue%man %BrightRed%xos%White%.%BrightRed%N%White%, where %BrightRed%N%White% is the page number.%Fg%',
     ],
     manPages: ManPages
   }
